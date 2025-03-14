@@ -40,7 +40,7 @@ pytest ./tests/test_pagination.py
 # Остановите докер контейнер с БД Postgresql
 docker-compose down
 Либо, если необходимо удалить volume после запуска автотестов
-docker-compose down -v
+docker-compose down -v 
 ```
 
 ## Endpoint's
