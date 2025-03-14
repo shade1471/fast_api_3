@@ -45,6 +45,14 @@ class TestGetUser:
         body = response.json()
         assert body['detail'] == 'Invalid user id'
 
+    @pytest.mark.parametrize('method_name', ('head', 'put', 'post'))
+    def test_not_allowed_method(self, users_endpoint, method_name):
+        method_dict = {'head': requests.head,
+                       'put': requests.put,
+                       'post': requests.post}
+        response = method_dict[method_name](f"{users_endpoint}/1")
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
 
 class TestCRUD:
 
@@ -85,6 +93,13 @@ class TestCRUD:
         assert response_update.status_code == HTTPStatus.NOT_FOUND
         assert response_update.json()['detail'] == 'User not found'
 
+    def test_update_not_valid_data(self, users_endpoint, create_user_id):
+        """Обновление существующего пользователя не валидными данными"""
+        new_data_user = {"name": "Maxim not valid", "job": 1}
+
+        response_update = requests.patch(f"{users_endpoint}/{create_user_id}", json=new_data_user)
+        assert response_update.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
+
     def test_delete_user(self, users_endpoint, create_user_id):
         """Удаление существующего пользователя"""
 
@@ -98,3 +113,8 @@ class TestCRUD:
 
         delete_response = requests.delete(f"{users_endpoint}/{user_id}")
         assert delete_response.status_code == HTTPStatus.NOT_FOUND
+
+    @pytest.mark.parametrize('user_id', (0, -1))
+    def test_delete_with_not_valid_user_id(self, users_endpoint, user_id):
+        delete_response = requests.delete(f'{users_endpoint}/{user_id}')
+        assert delete_response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
