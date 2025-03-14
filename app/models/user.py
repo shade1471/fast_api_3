@@ -1,11 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from sqlmodel import SQLModel, Field
 
-from models.support import SupportData
+from app.models.support import SupportData
 
 
-class UserData(BaseModel):
-    id: int
-    email: str
+class UserData(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    email: EmailStr
     first_name: str
     last_name: str
     avatar: str
@@ -30,6 +31,6 @@ class UserCreateResponse(BaseModel):
 
 
 class UserUpdatedResponse(BaseModel):
-    name: str
-    job: str
+    name: str | None = None
+    job: str | None = None
     updatedAt: str
