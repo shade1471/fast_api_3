@@ -1,8 +1,8 @@
 from typing import Iterable, Type
 
-from sqlmodel import Session, select
 from fastapi import HTTPException
 from sqlalchemy import func
+from sqlmodel import Session, select
 
 from app.models.user import UserData, UserCreateData
 from ..database.engine import engine
@@ -17,6 +17,11 @@ def get_users() -> Iterable[UserData]:
     with Session(engine) as session:
         statement = select(UserData)
         return session.exec(statement).all()
+
+
+def count_users():
+    with Session(engine) as session:
+        return session.exec(func.count(UserData.id)).scalar()
 
 
 def create_user(user: UserData) -> UserData:

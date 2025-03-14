@@ -7,12 +7,12 @@ from fastapi.responses import JSONResponse
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import select
+from sqlmodel import Session
 
-from app.models.user import UserData, UserResponse, UserCreateData, UserCreateResponse, UserUpdatedResponse
 from app.database import users
+from app.models.user import UserData, UserResponse, UserCreateData, UserCreateResponse, UserUpdatedResponse
 from ..database.engine import engine
 from ..models.support import support_data
-from sqlmodel import Session
 
 router = APIRouter(prefix="/api/users")
 

@@ -45,11 +45,9 @@ class TestGetUser:
         body = response.json()
         assert body['detail'] == 'Invalid user id'
 
-    @pytest.mark.parametrize('method_name', ('head', 'put', 'post'))
+    @pytest.mark.parametrize('method_name', ('options', 'head', 'put', 'post'))
     def test_not_allowed_method(self, users_endpoint, method_name):
-        method_dict = {'head': requests.head,
-                       'put': requests.put,
-                       'post': requests.post}
+        method_dict = {'options': requests.options, 'head': requests.head, 'put': requests.put, 'post': requests.post}
         response = method_dict[method_name](f"{users_endpoint}/1")
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 

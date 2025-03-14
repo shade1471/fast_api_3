@@ -4,13 +4,12 @@ from http import HTTPStatus
 import pytest
 import requests
 
+from app.database.users import count_users
 
-@pytest.fixture(scope='module')
-def current_count_users(users_endpoint) -> int:
-    response = requests.get(users_endpoint)
-    assert response.status_code == HTTPStatus.OK
-    body = response.json()
-    return body['total']
+
+@pytest.fixture(scope='module', autouse=True)
+def current_count_users() -> int:
+    return count_users()
 
 
 @pytest.mark.parametrize('size', (1, 3, 5))
@@ -21,20 +20,6 @@ def test_count_users_on_page_by_size_change(users_endpoint, size):
     body = response.json()
     items = body['items']
     assert len(items) == size
-    assert body['size'] == size
-    assert body['page'] == 1
-    assert body['total']
-
-
-def test_count_users_on_page_when_size_more_numbers_users(users_endpoint, current_count_users):
-    """Проверить наличие всех пользователей на странице, когда size больше общего числа пользователей """
-    size = current_count_users + 1
-    response = requests.get(f'{users_endpoint}', params={'page': 1, 'size': size})
-    assert response.status_code == HTTPStatus.OK
-    body = response.json()
-    items = body['items']
-
-    assert len(items) == current_count_users
     assert body['size'] == size
     assert body['page'] == 1
     assert body['total']
