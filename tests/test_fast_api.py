@@ -59,11 +59,17 @@ class TestCRUD:
         {'name': 'Alisa', 'job': 'qa-auto'}
     ])
     def test_create_user_post_request(self, users_endpoint, user_dict):
+        """Создание пользователя"""
         response = requests.post(users_endpoint, json=user_dict)
         assert response.status_code == HTTPStatus.CREATED
         body = response.json()
         assert body['name'] == user_dict['name']
         assert body['job'] == user_dict['job']
+
+    def test_create_not_valid_user(self, users_endpoint):
+        """Создание пользователя с невалидными данными"""
+        response = requests.post(users_endpoint, json={'name': 'Alisa', 'job': 1})
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
 
     def test_update_exist_user(self, users_endpoint, create_user_id):
         """Обновление существующего пользователя"""
@@ -114,5 +120,6 @@ class TestCRUD:
 
     @pytest.mark.parametrize('user_id', (0, -1))
     def test_delete_with_not_valid_user_id(self, users_endpoint, user_id):
+        """Удаление пользователя с невалидным id"""
         delete_response = requests.delete(f'{users_endpoint}/{user_id}')
         assert delete_response.status_code == HTTPStatus.UNPROCESSABLE_CONTENT
